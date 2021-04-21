@@ -31,7 +31,7 @@ int main() {
 
     // Defining an iterator value at 0 then executing a while loop to fill up the bag
     int i = 0;
-    while (cap > 0) {
+    while (cap > 0 && i < items.size()) {
         if (cap - items[i].first > 0) {
             cap -= items[i].first;
             max += items[i].first * items[i].second;

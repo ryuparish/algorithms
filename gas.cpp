@@ -2,59 +2,40 @@
 #include <iostream>
 
 int main() {
-    int d, gas, orig, stops, a, current, count, distance;
+    int d, gas, num_stops, a;
 
     // Read in the parameters
-    std::cin >> d >> gas >> stops;
-    int* stations;
-    stations = new (std::nothrow) int[stops];
-    if (stations == nullptr) {
-        std::cout << "\n Heap Memory could not be allocated .";
-        return 1;
-    }
+    std::cin >> d >> gas >> num_stops;
+    std::vector<long long> stations;
+
+    // The way to do this is just to follow the lecture and not make it more complicated than it is. Doing so will begin a series of infinite bugs and paradoxes (this will happen anyway if you are not good enough and you then learn to be better)
+    // Start off with the first stop being zero like in the lecture
+    stations.push_back(0);
 
     // Read in the distances of the stops
-    for (int i = 0; i < stops; ++i) {
-        std::cin >> a;
-        stations[i] = a;
+    while(std::cin >> a) {
+        stations.push_back(a);
     }
+    
+    // Have the ending point be the ending distance so we can use the algorithm described in the lecture
+    stations.push_back(d);
 
-    // distance will now become our distance marker, and count will be our counter for the number of stops
-    orig = gas;
-    distance = 0;
-    count = 0; 
-    current = 0;
-
-    // While the car has not reached it's destination
-    // Note: You can either use the current distance and the total distance or the current station and the last station as indictor of if you are done looping. Either way, you will need to keep track of how many stop you have made. ( 
-    while ((d - distance) - gas > 0) {
-
-        // For checking if the next stop changes (if not the closest is unreachable)
-        int previousstop = *stations;
-
-        // We only drive until we arrive at the last possible stop or until we run out of gas (in the case that we arrive at the last possible stop and still cannot reach the goal, the if statement below will catch that error
-        while(current <= stops-1 && gas - (*stations - distance) >= 0) {
-            gas -= (*stations - distance);
-            distance += *stations - distance;
-            current++;
-            stations++;
+    // Define the current_station and last refill variables
+    int current_station = 0, last_refill = 0, refills = 0;
+    while (current_station <= num_stops) {
+        last_refill = current_station;
+        while (current_station <= num_stops && stations[current_station + 1] - stations[last_refill] <= gas) {
+            current_station++;
         }
-
-        // Refueling
-        gas += orig - gas;
-
-        // If the station is in the same spot as before the inner while loop, this means that the closest station is not reachable and therefor we must return -1
-        if (*(stations) - *(stations - 1) > gas) {
+        if (last_refill == current_station) {
             std::cout << -1;
             return 1;
         }
-
-        count += 1;
+        if (current_station <= num_stops) {
+            refills++;
+        }
     }
-    
-
-    std::cout << count;
-    delete [] stations;
+    std::cout << refills;
     return 0;
 }
 
