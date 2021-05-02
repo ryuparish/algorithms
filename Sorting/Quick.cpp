@@ -8,6 +8,8 @@ int Partition(std::vector<int> &a, int start, int end);
 int main() {
     int a;
     std::vector<int> list;
+    // Reading in a throwing away the first input length
+    std::cin >> a;
     while(std::cin >> a) {
         list.push_back(a);
     }
