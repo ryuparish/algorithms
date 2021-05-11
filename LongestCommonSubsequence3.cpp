@@ -120,47 +120,54 @@ void readin(int num_lists, std::vector<int>& list1, std::vector<int>& list2){
     }
 }
 
-//std::vector< std::vector< std::pair<int, std::pair<int, int> > > > grid_creator(){
-    
-
+std::vector< std::vector< std::pair<int, std::pair<int, int> > > > grid_creator(int& vertical_len, int& horizontal_len){
+    std::vector< std::vector< std::pair<int , std::pair<int, int> > > > grid(vertical_len, std::vector< std::pair<int, std::pair<int , int> > >(horizontal_len));
+    return grid;
+}
 
 int main() {
-    std::vector<int> num_1, num_2;
-    readin(2, num_1, num_2);
-    // Create the zero 2D vector Fill in the foundation of the DP
-    // For each pair, the first value will be the # of points at that position and the second the optimal spot before it (another pair)
-    std::vector< std::vector< std::pair<int , std::pair<int, int> > > > grid(num_1.size() + 1, std::vector< std::pair<int, std::pair<int , int> > >(num_2.size() + 1));
-    assert(grid.size() <= num_1.size() + 1 && grid[0].size() <= num_2.size() + 1);
-    
-    // DEBUG
-    //std::cout << "Here are the rows of the grid: " << grid.size() << " and here are the columns of the grid: " << grid[0].size() << "\n";
+    std::vector<int> num_1, num_2, common_substring;
+    for(int i = 2; i > 0; --i){
+        readin(i, num_1, num_2);
+        // Create the zero 2D vector Fill in the foundation of the DP
+        // For each pair, the first value will be the # of points at that position and the second the optimal spot before it (another pair)
+        std::vector< std::vector< std::pair<int , std::pair<int, int> > > > grid(num_1.size() + 1, std::vector< std::pair<int, std::pair<int , int> > >(num_2.size() + 1));
+        assert(grid.size() <= num_1.size() + 1 && grid[0].size() <= num_2.size() + 1);
+        
+        // DEBUG
+        //std::cout << "Here are the rows of the grid: " << grid.size() << " and here are the columns of the grid: " << grid[0].size() << "\n";
 
-    // DEBUG
-    //for(int i = 0; i < grid.size(); ++i){
-    //    for(int j = 0; j < grid[0].size(); ++j){
-    //        std::cout << grid[i][j].first << " ";
-    //    }
-    //    std::cout << "\n";
-    //}
+        // DEBUG
+        //for(int i = 0; i < grid.size(); ++i){
+        //    for(int j = 0; j < grid[0].size(); ++j){
+        //        std::cout << grid[i][j].first << " ";
+        //    }
+        //    std::cout << "\n";
+        //}
 
-    GridFiller(grid, num_1, num_2);
-    // DEBUG
-    //std::cout << "\n";
+        GridFiller(grid, num_1, num_2);
 
-    // DEBUG
-    //for(int i = 0; i < grid.size(); ++i){
-    //    for(int j = 0; j < grid[0].size(); ++j){
-    //        std::cout << grid[i][j].first << " ";
-    //    }
-    //    std::cout << "\n";
-    //}
-    // Print out the common substring but backwards
-    std::vector<int> common_substring = FindCommonSubstring(grid, num_1, num_2);
-    std::reverse(common_substring.begin(), common_substring.end());
-    // DEBUG
-    //for(int i = 0; i < common_substring.size(); ++i){
-    //    std::cout << common_substring[i] << " ";
-    //}
+        // DEBUG
+        //std::cout << "\n";
+
+        // DEBUG
+        //for(int i = 0; i < grid.size(); ++i){
+        //    for(int j = 0; j < grid[0].size(); ++j){
+        //        std::cout << grid[i][j].first << " ";
+        //    }
+        //    std::cout << "\n";
+        //}
+
+        // Print out the common substring but backwards
+        common_substring = FindCommonSubstring(grid, num_1, num_2);
+        std::reverse(common_substring.begin(), common_substring.end());
+        // Set the common substring equal to the second string because we will read in the third vector as the new set of numbers
+        num_2 = common_substring;
+        // DEBUG
+        //for(int i = 0; i < common_substring.size(); ++i){
+        //    std::cout << common_substring[i] << " ";
+        //}
+    }
     std::cout << common_substring.size();
     return 0;
 
