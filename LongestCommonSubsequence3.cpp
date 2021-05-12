@@ -76,8 +76,9 @@ void GridFiller(std::vector< std::vector<std::pair<int, std::pair<int, int> > > 
     }
 }
 
-// We can just destroy the nums and pop from the back since we dont really care about the nums afterwards.
-std::vector<int> FindCommonSubstring(std::vector< std::vector< std::pair<int , std::pair<int, int> > > >& grid, std::vector<int>& num_1, std::vector<int>& num_2){
+// We cannot destroy the substring and must use copies since we will do a total of 6 comparisons
+//
+std::vector<int> FindCommonSubstring(std::vector< std::vector< std::pair<int , std::pair<int, int> > > >& grid, std::vector<int> num_1, std::vector<int> num_2){
     int i, j;
     std::vector<int> common_substring;
     // If one of the nums shrinks down to zero, then the rest of the remaining num is certainly not in common with the other (since the other would be empty)
@@ -97,78 +98,120 @@ std::vector<int> FindCommonSubstring(std::vector< std::vector< std::pair<int , s
         }
     }
     
+    std::reverse(common_substring.begin(), common_substring.end());
     return common_substring;
 }
 
 // Arguments to read in vectors are number of lists, the first mandatory list and the second optional list
-void readin(int num_lists, std::vector<int>& list1, std::vector<int>& list2){
+void readin(std::vector<int>& list){
     int len, holder;
-    for(int i = 0; i < num_lists; ++i){
-        std::cin >> len;
-        if (i == 0){
-            for(int j = 0; j < len; ++j){
-                std::cin >> holder;
-                list1.push_back(holder);
-            }
-        }
-        else {
-            for(int k = 0; k < len; ++k){
-                std::cin >> holder;
-                list2.push_back(holder);
-            }
-        }
+    std::cin >> len;
+    for(int i = 0; i < len; ++i){
+        std::cin >> holder;
+        list.push_back(holder);
     }
 }
 
-std::vector< std::vector< std::pair<int, std::pair<int, int> > > > grid_creator(int& vertical_len, int& horizontal_len){
+// Create the grid based on the size of the given words (lengths of words are given)
+std::vector< std::vector< std::pair<int, std::pair<int, int> > > > grid_creator(int vertical_len, int horizontal_len){
     std::vector< std::vector< std::pair<int , std::pair<int, int> > > > grid(vertical_len, std::vector< std::pair<int, std::pair<int , int> > >(horizontal_len));
     return grid;
 }
 
-int main() {
-    std::vector<int> num_1, num_2, common_substring;
-    for(int i = 2; i > 0; --i){
-        readin(i, num_1, num_2);
-        // Create the zero 2D vector Fill in the foundation of the DP
-        // For each pair, the first value will be the # of points at that position and the second the optimal spot before it (another pair)
-        std::vector< std::vector< std::pair<int , std::pair<int, int> > > > grid(num_1.size() + 1, std::vector< std::pair<int, std::pair<int , int> > >(num_2.size() + 1));
-        assert(grid.size() <= num_1.size() + 1 && grid[0].size() <= num_2.size() + 1);
-        
-        // DEBUG
-        //std::cout << "Here are the rows of the grid: " << grid.size() << " and here are the columns of the grid: " << grid[0].size() << "\n";
-
-        // DEBUG
-        //for(int i = 0; i < grid.size(); ++i){
-        //    for(int j = 0; j < grid[0].size(); ++j){
-        //        std::cout << grid[i][j].first << " ";
-        //    }
-        //    std::cout << "\n";
-        //}
-
-        GridFiller(grid, num_1, num_2);
-
-        // DEBUG
-        //std::cout << "\n";
-
-        // DEBUG
-        //for(int i = 0; i < grid.size(); ++i){
-        //    for(int j = 0; j < grid[0].size(); ++j){
-        //        std::cout << grid[i][j].first << " ";
-        //    }
-        //    std::cout << "\n";
-        //}
-
-        // Print out the common substring but backwards
-        common_substring = FindCommonSubstring(grid, num_1, num_2);
-        std::reverse(common_substring.begin(), common_substring.end());
-        // Set the common substring equal to the second string because we will read in the third vector as the new set of numbers
-        num_2 = common_substring;
-        // DEBUG
-        //for(int i = 0; i < common_substring.size(); ++i){
-        //    std::cout << common_substring[i] << " ";
-        //}
+// Compare the three strings entered and return the longest length
+int compare_3_lens(std::vector<int>& string1, std::vector<int>& string2, std::vector<int>& string3){
+    if(string1.size() >= string2.size()){
+        if(string1.size() >= string3.size()){return string1.size();}
+        else {return string3.size();}
     }
-    std::cout << common_substring.size();
+    else if (string2.size() >= string3.size()){return string2.size();}
+    else{return string3.size();}
+}
+            
+// We need to compare LCS(1,2) with LCS(1,3), LCS(1,3) with LCS(2,3), and LCS(1,2) with LCS(2,3) to see which combination holds the longest
+int main() {
+    std::vector<int> num_1, num_2, num_3, substring_1, substring_2, substring_3, finalist_1, finalist_2, finalist_3;
+    std::vector< std::vector< std::pair<int , std::pair<int, int> > > > grid;
+    // Create the zero 2D vector Fill in the foundation of the DP
+    // For each pair, the first value will be the # of points at that position and the second the optimal spot before it (another pair)
+    readin(num_1);
+    readin(num_2);
+    readin(num_3);
+
+    // Getting the substring from num1 and num2 
+    grid = grid_creator(num_1.size() + 1, num_2.size() + 1);
+    // DEBUG
+    //std::cout << "Here are the rows of the grid: " << grid.size() << " and here are the columns of the grid: " << grid[0].size() << "\n";
+    // Assert the correct dimensions of the grid
+    assert(grid.size() <= num_1.size() + 1 && grid[0].size() <= num_2.size() + 1);
+    GridFiller(grid, num_1, num_2);
+    // DEBUG
+    //for(int i = 0; i < grid.size(); ++i){
+    //    for(int j = 0; j < grid[0].size(); ++j){
+    //        std::cout << grid[i][j].first << " ";
+    //    }
+    //    std::cout << "\n";
+    //}
+    substring_1 = FindCommonSubstring(grid, num_1, num_2);
+    
+    // Getting the substring from num1 and num3
+    grid = grid_creator(num_1.size() + 1, num_3.size() +1);
+    // DEBUG
+    //std::cout << "Here are the rows of the grid: " << grid.size() << " and here are the columns of the grid: " << grid[0].size() << "\n";
+    // Assert the correct dimensions of the grid
+    assert(grid.size() <= num_1.size() + 1 && grid[0].size() <= num_3.size() + 1);
+    GridFiller(grid, num_1, num_3);
+    // DEBUG
+    //for(int i = 0; i < grid.size(); ++i){
+    //    for(int j = 0; j < grid[0].size(); ++j){
+    //        std::cout << grid[i][j].first << " ";
+    //    }
+    //    std::cout << "\n";
+    //}
+    substring_2 = FindCommonSubstring(grid, num_1, num_3);
+
+    // Getting the substring from num2 and num3
+    grid = grid_creator(num_2.size() + 1, num_3.size() +1);
+    // DEBUG
+    //std::cout << "Here are the rows of the grid: " << grid.size() << " and here are the columns of the grid: " << grid[0].size() << "\n";
+    // Assert the correct dimensions of the grid
+    assert(grid.size() <= num_2.size() + 1 && grid[0].size() <= num_3.size() + 1);
+    GridFiller(grid, num_2, num_3);
+    // DEBUG
+    //for(int i = 0; i < grid.size(); ++i){
+    //    for(int j = 0; j < grid[0].size(); ++j){
+    //        std::cout << grid[i][j].first << " ";
+    //    }
+    //    std::cout << "\n";
+    //}
+    substring_3 = FindCommonSubstring(grid, num_2, num_3);
+
+    // Find the longest substring after comparing it with others
+    // Comparing substring1 with substring2
+    grid = grid_creator(substring_1.size() + 1, substring_2.size() +1);
+    assert(grid.size() <= substring_1.size() + 1 && grid[0].size() <= substring_2.size() + 1);
+    GridFiller(grid, substring_1, substring_2);
+    finalist_1 = FindCommonSubstring(grid, substring_1, substring_2);
+    // Comparing substring1 with substring3
+    grid = grid_creator(substring_1.size() + 1, substring_3.size() +1);
+    assert(grid.size() <= substring_1.size() + 1 && grid[0].size() <= substring_3.size() + 1);
+    GridFiller(grid, substring_1, substring_3);
+    finalist_2 = FindCommonSubstring(grid, substring_1, substring_3);
+    // Comparing substring2 with substring3
+    grid = grid_creator(substring_2.size() + 1, substring_3.size() +1);
+    assert(grid.size() <= substring_2.size() + 1 && grid[0].size() <= substring_3.size() + 1);
+    GridFiller(grid, substring_2, substring_3);
+    finalist_3 = FindCommonSubstring(grid, substring_2, substring_3);
+
+    // Finally, we compare the finalist strings for length (all the original substrings will have these strings in common
+    compare_3_lens(finalist_1, finalist_2, finalist_3);
+
+    // DEBUG
+    //for(int i = 0; i < finalist_1.size(); ++i){
+    //    std::cout << finalist_1[i] << " ";
+    //}
+    std::cout << compare_3_lens(finalist_1, finalist_2, finalist_3);
+
     return 0;
 
 }
