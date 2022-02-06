@@ -30,14 +30,14 @@ std::vector<int> Mergesort(std::vector<int> a) {
 
     // Split the list into two and then call mergesort on left then right then merge on both and return it
     int half = a.size() / 2;
-    std::vector<int> b;
-    std::vector<int> c;
-    for (int i = 0; i < half; ++i) {
-        b.push_back(a[i]);
-    }
-    for (int i = half; i < a.size(); ++i) {
-        c.push_back(a[i]);
-    }
+    std::vector<int> b(a.begin(), a.begin()+half);
+    std::vector<int> c(a.begin()+half, a.end());
+    //for (int i = 0; i < half; ++i) {
+    //    b.push_back(a[i]);
+    //}
+    //for (int i = half; i < a.size(); ++i) {
+    //    c.push_back(a[i]);
+    //}
 
     // Recursively calling mergesort then merge (Dirty: using a and b for assignment of the newly returned values. Although technically they should be the same values just sorted)
     b = Mergesort(b);
@@ -70,7 +70,3 @@ std::vector<int> Merge(std::vector<int> a, std::vector<int> b) {
     }
     return c;
 }
-
-
-
-

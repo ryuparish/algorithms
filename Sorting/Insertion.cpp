@@ -1,8 +1,9 @@
 #include <iostream>
 #include <vector>
 
-// Remove, Index, Decrement (I think of it more as Shift Sort)
-
+// Remove, Decrement Index, and possibly swap (I think of it more as Shift Sort)
+// We first remove a gap (beginnning at the 1th element), then loop from that gap position to the beginning of the list and swap until you reach a value that is
+// less than the current value in the gap.
 
 int main() {
    

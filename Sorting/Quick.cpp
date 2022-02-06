@@ -34,7 +34,6 @@ void Quicksort(std::vector<int> &a, int start, int end) {
     }
 }
 
-
 int Partition(std::vector<int> &a, int start, int end) {
     int pindex = start;
     int pivot = a[end];
@@ -48,4 +47,3 @@ int Partition(std::vector<int> &a, int start, int end) {
     std::swap(a[pindex], a[end]);
     return pindex;
 }
-
